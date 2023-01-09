@@ -71,8 +71,7 @@ class DecodePredictions(tf.keras.layers.Layer):
             ],
             axis=-1,
         )
-        boxes_transformed = convert_to_corners(boxes)
-        return boxes_transformed
+        return convert_to_corners(boxes)
 
     def call(self, images, predictions):
         image_shape = tf.cast(tf.shape(images), dtype=tf.float32)

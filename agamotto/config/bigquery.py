@@ -58,8 +58,10 @@ class BigQuery:
         except NotFound:
             # CreateModel
             table = bigquery.Table(self._table_id, schema=get_schema())
-            table = self._bigquery_service.create_table(table) 
-            logger(self.__class__.__name__).info("Created table {}.{}.{}".format(table.project, table.dataset_id, table.table_id))
+            table = self._bigquery_service.create_table(table)
+            logger(self.__class__.__name__).info(
+                f"Created table {table.project}.{table.dataset_id}.{table.table_id}"
+            )
     
     def insert_row(self, count):
         # Create Model
@@ -78,6 +80,8 @@ class BigQuery:
             if errors == []:
                 logger(self.__class__.__name__).info("Stream insert was successfull")
             else:
-              logger(self.__class__.__name__).info("Encountered errors while inserting rows: {}".format(errors))
+                logger(self.__class__.__name__).info(
+                    f"Encountered errors while inserting rows: {errors}"
+                )
         except Exception as ex:
             raise ex

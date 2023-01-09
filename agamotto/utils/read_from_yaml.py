@@ -22,9 +22,9 @@ def read_from_yaml(file_name = "agamotto.yaml"):
     try:
         with open(file_name) as f:
             data = yaml.load(f, Loader=SafeLoader)
-        logger().debug("Read yaml with data: "+ str(data))
+        logger().debug(f"Read yaml with data: {str(data)}")
         return data
     except Exception as ex:
-        logger().error("Error when attempting to read yaml: " + str(ex))
+        logger().error(f"Error when attempting to read yaml: {str(ex)}")
         raise ex
     

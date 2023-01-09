@@ -165,8 +165,7 @@ class RetinaNetLoss(tf.losses.Loss):
         normalizer = tf.reduce_sum(positive_mask, axis=-1)
         clf_loss = tf.math.divide_no_nan(tf.reduce_sum(clf_loss, axis=-1), normalizer)
         box_loss = tf.math.divide_no_nan(tf.reduce_sum(box_loss, axis=-1), normalizer)
-        loss = clf_loss + box_loss
-        return loss
+        return clf_loss + box_loss
 
 """
 ## Building Feature Pyramid Network as a custom layer
@@ -183,7 +182,7 @@ class FeaturePyramid(keras.layers.Layer):
 
     def __init__(self, backbone=None, **kwargs):
         super(FeaturePyramid, self).__init__(name="FeaturePyramid", **kwargs)
-        self.backbone = backbone if backbone else get_backbone()
+        self.backbone = backbone or get_backbone()
         self.conv_c3_1x1 = keras.layers.Conv2D(256, 1, 1, "same")
         self.conv_c4_1x1 = keras.layers.Conv2D(256, 1, 1, "same")
         self.conv_c5_1x1 = keras.layers.Conv2D(256, 1, 1, "same")

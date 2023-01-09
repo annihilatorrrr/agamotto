@@ -68,8 +68,7 @@ class AnchorBox:
                 dims = tf.reshape(
                     tf.stack([anchor_width, anchor_height], axis=-1), [1, 1, 2]
                 )
-                for scale in self.scales:
-                    anchor_dims.append(scale * dims)
+                anchor_dims.extend(scale * dims for scale in self.scales)
             anchor_dims_all.append(tf.stack(anchor_dims, axis=-2))
         return anchor_dims_all
 

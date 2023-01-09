@@ -47,10 +47,10 @@ class Agamotto():
     ## Setting parameters
     """
     def download_weights(self):
-        url = "https://github.com/roberto-goncalves/datasets/releases/download/v0/{}.zip".format(self._load_weights_dir)
-        filename = os.path.join(os.getcwd(), "{}.zip".format(self._load_weights_dir))
+        url = f"https://github.com/roberto-goncalves/datasets/releases/download/v0/{self._load_weights_dir}.zip"
+        filename = os.path.join(os.getcwd(), f"{self._load_weights_dir}.zip")
         keras.utils.get_file(filename, url)
-        with zipfile.ZipFile("{}.zip".format(self._load_weights_dir), "r") as z_fp:
+        with zipfile.ZipFile(f"{self._load_weights_dir}.zip", "r") as z_fp:
             z_fp.extractall("./")
 
     
@@ -174,7 +174,7 @@ class Agamotto():
         frame_width = int(player.get(3))
         frame_height = int(player.get(4))
 
-        logger(self.__class__.__name__).info("Loading video {}".format(video_path))
+        logger(self.__class__.__name__).info(f"Loading video {video_path}")
         output = cv2.VideoWriter(self._video_output_location,cv2.VideoWriter_fourcc('M','J','P','G'), self._video_write_output_fps, (frame_width,frame_height))
 
         count = 0
@@ -187,7 +187,7 @@ class Agamotto():
                 logger(self.__class__.__name__).info("Frame was not load correctly, exiting...")
                 break
             detections, ratio, num_detections = self.create_detections(frame)
-            logger(self.__class__.__name__).info("Count of persons: {}".format(num_detections))
+            logger(self.__class__.__name__).info(f"Count of persons: {num_detections}")
             self.draw_boxes_to_frame(frame=frame, detections=detections, num_detections=num_detections, ratio=ratio)
             detections_count.append(num_detections)
             output.write(frame)
@@ -197,7 +197,9 @@ class Agamotto():
         if self._gcp_save_to_bigquery:
             self.insert_to_bigquery(num_detections=detections_count)
 
-        logger(self.__class__.__name__).info("Saving to file {}".format(self._video_output_location))
+        logger(self.__class__.__name__).info(
+            f"Saving to file {self._video_output_location}"
+        )
         cv2.destroyAllWindows()
         output.release()
         player.release()
@@ -205,21 +207,21 @@ class Agamotto():
     def process_stream(self, stream_path):
         while True:
             time.sleep(self._video_read_inverval)
-            logger(self.__class__.__name__).info("Loading stream {}".format(stream_path))
+            logger(self.__class__.__name__).info(f"Loading stream {stream_path}")
             player = cv2.VideoCapture(stream_path)
             while player.isOpened():
                 ret, frame = player.read()
                 if not ret:     
                     logger(self.__class__.__name__).info("Frame was not load correctly, exiting...")
                     break
-                
+
                 detections, ratio, num_detections = self.create_detections(frame)
-                logger(self.__class__.__name__).info("Count of persons: {}".format(num_detections))
+                logger(self.__class__.__name__).info(f"Count of persons: {num_detections}")
                 self.draw_boxes_to_frame(frame=frame, detections=detections, num_detections=num_detections, ratio=ratio)
                 if self._gcp_save_to_bigquery:
                     self.insert_to_bigquery(num_detections=[num_detections])
                 cv2.imwrite("frame-0.jpg", frame)
-                
+
                 break
             cv2.destroyAllWindows()
             player.release()
@@ -228,7 +230,9 @@ class Agamotto():
         bigquery = BigQuery(self._config)
         detections_count = []
         for values in num_detections:
-            logger(self.__class__.__name__).info("Adding {} to batch".format([values, datetime.now().strftime("%Y-%m-%dT%H:%M:%S")]))
+            logger(self.__class__.__name__).info(
+                f'Adding {[values, datetime.now().strftime("%Y-%m-%dT%H:%M:%S")]} to batch'
+            )
             detections_count.append([values, datetime.now().strftime("%Y-%m-%dT%H:%M:%S")])
         logger(self.__class__.__name__).info(f"Attempting to stream insert {len(detections_count)} rows into BigQuery...")
         bigquery.insert(detections_count) 

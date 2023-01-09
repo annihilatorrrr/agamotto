@@ -20,6 +20,5 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s | %(name)s | %(leve
 
 
 def logger(class_name=""):
-    logger = logging.getLogger('agamotto:'+class_name)
-    return logger
+    return logging.getLogger(f'agamotto:{class_name}')
     
